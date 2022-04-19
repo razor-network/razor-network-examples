@@ -2,15 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "./interface/IRandomNoManager.sol";
+import "hardhat/console.sol";
 
 contract Lottery {
     uint256 public contributionAmount = 0.1 ether;
-    uint256 poolCounter = 1;
+    uint8 public immutable maxParticipants = 5;
+    uint256 public poolCounter = 1;
+    uint8 public poolParticipantCounter = 0;
+
     mapping(uint256 => address[]) poolParticipants;
     mapping(uint256 => mapping(address => bool)) poolRecords;
-    uint8 public immutable maxParticipants = 5;
+
     IRandomNoManager public randomNoManager;
-    uint8 public poolParticipantCounter = 0;
 
     constructor(address _randomNoManager) {
         randomNoManager = IRandomNoManager(_randomNoManager);
@@ -22,7 +25,7 @@ contract Lottery {
             "Already contributed to pool"
         );
         require(
-            poolParticipantCounter == maxParticipants,
+            poolParticipantCounter != maxParticipants,
             "Pool reached max participants"
         );
         require(
@@ -35,7 +38,20 @@ contract Lottery {
         poolParticipantCounter++;
     }
 
-    function declareWinner() public returns (address) {}
+    function declareWinner() public returns (address) {
+        require(
+            poolParticipantCounter == maxParticipants,
+            "Max participants limit not reached"
+        );
+        // Needs to convert this to random number generator function
+        uint256 index = block.timestamp % poolParticipants[poolCounter].length;
+        address winner = poolParticipants[poolCounter][index];
+        bool sent = payable(winner).send(0.5 ether);
+        require(sent, "Failed to send reward");
+        poolCounter++;
+        poolParticipantCounter = 0;
+        return winner;
+    }
 
     receive() external payable {}
 }
