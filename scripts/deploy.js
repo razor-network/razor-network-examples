@@ -1,18 +1,10 @@
 const hre = require("hardhat");
 
-async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+const RANDOM_NO_MANAGER_ADDRESS = process.env.RANDOM_NO_MANAGER_ADDRESS;
 
-  // We get the contract to deploy
+async function main() {
   const Lottery = await hre.ethers.getContractFactory("Lottery");
-  const lottery = await Lottery.deploy(
-    "0xbcd4042de499d14e55001ccbb24a551f3b954096"
-  );
+  const lottery = await Lottery.deploy(RANDOM_NO_MANAGER_ADDRESS);
 
   await lottery.deployed();
 
