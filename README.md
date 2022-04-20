@@ -1,15 +1,4 @@
-# Basic Sample Hardhat Project
+# Lotter dApp
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+Lotter contract address - `0x218EaCA28D60C3e915928Dcecc5619646b011302`
+RandomNoManager address - `0x4e4CF6039637B208D1f68872eA947d917086AaE1`
