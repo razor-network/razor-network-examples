@@ -8,5 +8,9 @@
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.4",
     "hardhat": "^2.9.3"
+  },
+  "scripts": {
+    "test": "npx hardhat test",
+    "deploy:skale": "npx hardhat run scripts/deploy.js --network skale"
   }
 }
