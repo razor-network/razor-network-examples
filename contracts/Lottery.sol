@@ -14,8 +14,11 @@ contract Lottery {
     mapping(uint256 => address[]) poolParticipants;
     mapping(uint256 => mapping(address => bool)) poolRecords;
     mapping(uint256 => bool) epoches;
+    mapping(uint256 => address) winners;
 
     IRandomNoManager public randomNoManager;
+
+    event WinnerDeclared(address indexed winner, uint256 pool);
 
     constructor(address _randomNoManager) {
         randomNoManager = IRandomNoManager(_randomNoManager);
@@ -40,7 +43,7 @@ contract Lottery {
         poolParticipantCounter++;
     }
 
-    function declareWinner() public returns (address) {
+    function declareWinner() public {
         require(
             poolParticipantCounter == MAX_PARTICIPANTS,
             "Max participants limit not reached"
@@ -54,10 +57,12 @@ contract Lottery {
         bool sent = payable(winner).send(contributionAmount * MAX_PARTICIPANTS);
         require(sent, "Failed to send reward");
 
+        emit WinnerDeclared(winner, poolCounter);
+
+        winners[poolCounter] = winner;
         poolCounter++;
         poolParticipantCounter = 0;
         epoches[epoch] = true;
-        return winner;
     }
 
     receive() external payable {}
