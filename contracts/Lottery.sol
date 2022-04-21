@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "./interface/IRandomNoManager.sol";
-import "hardhat/console.sol";
 
 contract Lottery {
     uint256 public contributionAmount = 0.1 ether;
