@@ -53,9 +53,7 @@ contract Lottery {
         uint256 index = randomNoManager.getGenericRandomNumberOfLastEpoch() %
             MAX_PARTICIPANTS;
         address winner = poolParticipants[poolCounter][index];
-        (bool sent, bytes memory data) = payable(winner).call{
-            value: contributionAmount * MAX_PARTICIPANTS
-        }("");
+        bool sent = payable(winner).send(contributionAmount * MAX_PARTICIPANTS);
         require(sent, "Failed to send reward");
 
         emit WinnerDeclared(winner, poolCounter);
