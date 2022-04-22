@@ -1,8 +1,10 @@
+import { Container, Heading } from "@chakra-ui/react";
+
 function App() {
   return (
-    <div className="App">
-      <h1>Hello World</h1>
-    </div>
+    <Container>
+      <Heading>Lottery dApp</Heading>
+    </Container>
   );
 }
 
