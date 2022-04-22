@@ -42,7 +42,7 @@ contract Lottery {
         poolParticipantCounter++;
     }
 
-    function declareWinner() public {
+    function declareWinner() public payable {
         require(
             poolParticipantCounter == MAX_PARTICIPANTS,
             "Max participants limit not reached"
