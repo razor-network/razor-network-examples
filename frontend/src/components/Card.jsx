@@ -13,6 +13,7 @@ const Card = () => {
   const [poolCounter, setPoolCounter] = useState(null);
   const [participantCounter, setParticipantCounter] = useState(null);
   const [isContributeLoading, setIsCoontributeLoading] = useState(false);
+  const [isDeclareLoading, setIsDeclareLoading] = useState(false);
 
   const getContractInstance = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -48,12 +49,31 @@ const Card = () => {
         value: ethers.utils.parseEther("0.1"),
       });
       await tx.wait();
+      console.log("Contribute tx");
+      console.log(tx);
       fetchContractData();
     } catch (err) {
       console.log("err");
       console.log(err);
     } finally {
       setIsCoontributeLoading(false);
+    }
+  };
+
+  const declareWinner = async () => {
+    setIsDeclareLoading(true);
+    try {
+      const lottery = getContractInstance();
+      const tx = await lottery.declareWinner();
+      await tx.wait();
+      console.log("Declare winner tx");
+      console.log(tx);
+      fetchContractData();
+    } catch (err) {
+      console.log("err");
+      console.log(err);
+    } finally {
+      setIsDeclareLoading(false);
     }
   };
 
@@ -79,11 +99,13 @@ const Card = () => {
       </Button>
       <Button
         isDisabled={!account}
-        variant="outline"
-        leftIcon={<BellIcon />}
-        colorScheme="blue"
         w="full"
+        variant="outline"
+        colorScheme="blue"
         size="lg"
+        leftIcon={<BellIcon />}
+        onClick={declareWinner}
+        isLoading={isDeclareLoading}
       >
         Declare winner
       </Button>
