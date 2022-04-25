@@ -1,5 +1,5 @@
 import { AddIcon, BellIcon } from "@chakra-ui/icons";
-import { Button, VStack, Text } from "@chakra-ui/react";
+import { Button, VStack, Text, Tooltip } from "@chakra-ui/react";
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ const Card = () => {
   const { account } = useWeb3React();
   const [poolCounter, setPoolCounter] = useState(null);
   const [participantCounter, setParticipantCounter] = useState(null);
+  const [isContributeLoading, setIsCoontributeLoading] = useState(false);
 
   const getContractInstance = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -35,23 +36,49 @@ const Card = () => {
 
   useEffect(() => {
     if (account) {
-      console.log("account connected");
       fetchContractData();
     }
   }, [account]);
 
+  const contribute = async () => {
+    setIsCoontributeLoading(true);
+    try {
+      const lottery = getContractInstance();
+      const tx = await lottery.contribute({
+        value: ethers.utils.parseEther("0.1"),
+      });
+      await tx.wait();
+      fetchContractData();
+    } catch (err) {
+      console.log("err");
+      console.log(err);
+    } finally {
+      setIsCoontributeLoading(false);
+    }
+  };
+
   return (
-    <VStack spacing={4}>
+    <VStack spacing={4} w="full">
       {poolCounter && !isNaN(participantCounter) && (
         <ContractDetails
           poolCounter={poolCounter}
           participantCounter={participantCounter}
         />
       )}
-      <Button w="full" colorScheme="blue" size="lg" leftIcon={<AddIcon />}>
+
+      <Button
+        isDisabled={!account}
+        w="full"
+        colorScheme="blue"
+        size="lg"
+        leftIcon={<AddIcon />}
+        onClick={contribute}
+        isLoading={isContributeLoading}
+      >
         Contribute
       </Button>
       <Button
+        isDisabled={!account}
         variant="outline"
         leftIcon={<BellIcon />}
         colorScheme="blue"

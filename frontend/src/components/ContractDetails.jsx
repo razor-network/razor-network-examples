@@ -12,7 +12,12 @@ const ContractDetails = ({ poolCounter, participantCounter }) => {
         <Text fontSize="md" align="right">
           Participants - {participantCounter} / 5
         </Text>
-        <Progress isAnimated size="lg" value={20 * participantCounter} />
+        <Progress
+          hasStripe
+          isAnimated
+          size="lg"
+          value={20 * participantCounter}
+        />
       </Box>
     </VStack>
   );
