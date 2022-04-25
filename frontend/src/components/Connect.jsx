@@ -19,7 +19,7 @@ const Connect = () => {
   }, [account, active]);
 
   return (
-    <Flex justifyContent="flex-end" my={12}>
+    <Flex justifyContent="flex-end" mt={12} mb={6}>
       {isAuthorized && account && <AccountText account={account} />}
       {isAuthorized && chainId !== SKALE_CHAIN_ID && (
         <Button variant="outline" colorScheme="red" onClick={switchNetwork}>
