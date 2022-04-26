@@ -29,11 +29,12 @@ const AccordionCard = () => {
               Participant deposit <b>0.1 ETH</b> in pool to contribute.
             </ListItem>
             <ListItem>
-              Only <b>5</b> unique participant in single pool.
+              Only <b>5</b> unique participant are allowed to participate in
+              single pool.
             </ListItem>
             <ListItem>
               Once pool participant has been reached to max(5). Anyone can call
-              declare winner function.
+              declare winner.
             </ListItem>
             <ListItem>
               Winner will be choosen randomly using{" "}
