@@ -247,5 +247,5 @@ from **Razor Contracts** can be used for a large number of use cases where a rel
 
 ## Deployed contract addresses (Skale)
 
-Lottery contract address - `0x13E651a51D91547AEEb0b23b4FdDC9281f907AeF`
+Lottery contract address - `0x5E9a4Cf99dCD0EC61C031D545D625BD982945803`
 RandomNoManager address - `0x4e4CF6039637B208D1f68872eA947d917086AaE1`
