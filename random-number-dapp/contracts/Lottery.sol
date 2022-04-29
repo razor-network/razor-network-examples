@@ -13,7 +13,7 @@ contract Lottery {
     mapping(uint256 => address[]) poolParticipants;
     mapping(uint256 => mapping(address => bool)) poolRecords;
     mapping(uint256 => bool) epoches;
-    mapping(uint256 => address) winners;
+    mapping(uint256 => address) public winners;
 
     IRandomNoManager public randomNoManager;
 
