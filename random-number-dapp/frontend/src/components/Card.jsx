@@ -1,5 +1,5 @@
 import { AddIcon, BellIcon } from "@chakra-ui/icons";
-import { Button, VStack, Text, Tooltip } from "@chakra-ui/react";
+import { Button, VStack, Text, Tooltip, useToast } from "@chakra-ui/react";
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
@@ -14,6 +14,8 @@ const Card = () => {
   const [participantCounter, setParticipantCounter] = useState(null);
   const [isContributeLoading, setIsCoontributeLoading] = useState(false);
   const [isDeclareLoading, setIsDeclareLoading] = useState(false);
+
+  const toast = useToast();
 
   const getContractInstance = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -51,12 +53,45 @@ const Card = () => {
       await tx.wait();
       console.log("Contribute tx");
       console.log(tx);
+
+      toast({
+        title: "Transaction successful!",
+        description: "You have successfully contributed to lottery pool💰",
+        status: "success",
+        isClosable: true,
+      });
       fetchContractData();
     } catch (err) {
-      console.log("err");
+      console.log("Error occured while contributing");
       console.log(err);
+
+      toast({
+        title: "Transaction unsuccessful",
+        description: "Error occured while contributing to pool",
+        status: "error",
+        isClosable: true,
+      });
     } finally {
       setIsCoontributeLoading(false);
+    }
+  };
+
+  const fetchWinnerDetails = async (lottery) => {
+    try {
+      const currentPool = await lottery.poolCounter();
+      const prevPool = currentPool.sub(1);
+      const winner = await lottery.winners(prevPool);
+
+      toast({
+        title: `Winner for ${prevPool.toNumber()} is ${winner}`,
+        description: "Winner will received 0.5 ETH as reward",
+        status: "success",
+        duration: 10000,
+        isClosable: true,
+      });
+    } catch (err) {
+      console.log("Error occured while fetching winner");
+      console.log(err);
     }
   };
 
@@ -68,10 +103,25 @@ const Card = () => {
       await tx.wait();
       console.log("Declare winner tx");
       console.log(tx);
+
+      toast({
+        title: "Winner declared!",
+        isClosable: true,
+        status: "success",
+        duration: 2000,
+      });
+
+      fetchWinnerDetails(lottery);
       fetchContractData();
     } catch (err) {
       console.log("err");
       console.log(err);
+
+      toast({
+        title: "Error occured while declaring winner",
+        isClosable: true,
+        status: "error",
+      });
     } finally {
       setIsDeclareLoading(false);
     }
