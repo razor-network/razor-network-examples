@@ -43,6 +43,31 @@ const Card = () => {
     }
   }, [account]);
 
+  const handleUserDeniedTx = (err) => {
+    toast({
+      title: "User denied transaction request",
+      description: err.message,
+      status: "error",
+      isClosable: true,
+    });
+  };
+
+  const handleCallException = async (err) => {
+    const { transactionHash } = err;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    provider.getTransaction(transactionHash).then((tx) => {
+      provider.call(tx).catch((err) => {
+        const { error } = err;
+        toast({
+          title: error.data,
+          description: "Transaction Reverted",
+          status: "error",
+          isClosable: true,
+        });
+      });
+    });
+  };
+
   const contribute = async () => {
     setIsCoontributeLoading(true);
     try {
@@ -64,13 +89,13 @@ const Card = () => {
     } catch (err) {
       console.log("Error occured while contributing");
       console.log(err);
-
-      toast({
-        title: "Transaction unsuccessful",
-        description: "Error occured while contributing to pool",
-        status: "error",
-        isClosable: true,
-      });
+      if (err.code === 4001) {
+        handleUserDeniedTx(err);
+      } else if (err.code === "CALL_EXCEPTION") {
+        handleCallException(err);
+      } else {
+        console.log(err);
+      }
     } finally {
       setIsCoontributeLoading(false);
     }
@@ -114,14 +139,13 @@ const Card = () => {
       fetchWinnerDetails(lottery);
       fetchContractData();
     } catch (err) {
-      console.log("err");
-      console.log(err);
-
-      toast({
-        title: "Error occured while declaring winner",
-        isClosable: true,
-        status: "error",
-      });
+      if (err.code === 4001) {
+        handleUserDeniedTx(err);
+      } else if (err.code === "CALL_EXCEPTION") {
+        handleCallException(err);
+      } else {
+        console.log(err);
+      }
     } finally {
       setIsDeclareLoading(false);
     }
