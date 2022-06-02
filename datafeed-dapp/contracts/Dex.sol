@@ -85,7 +85,7 @@ contract Dex {
         uint16 from,
         uint16 to,
         uint256 fromAmount
-    ) private view returns (uint256) {
+    ) public view returns (uint256) {
         uint32 fromTokenResult;
         uint32 toTokenResult;
         int8 fromTokenPower;
