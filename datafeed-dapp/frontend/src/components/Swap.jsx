@@ -1,4 +1,12 @@
-import { Button, Container, Input, Select, Text, Flex } from "@chakra-ui/react";
+import {
+  Button,
+  Container,
+  Input,
+  Select,
+  Text,
+  Flex,
+  useToast,
+} from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useAccount, useContract, useSigner } from "wagmi";
@@ -20,6 +28,9 @@ const Swap = () => {
   const [toToken, setToToken] = useState("WBTC");
   const [fromTokenAmount, setFromTokenAmount] = useState(0);
   const [toTokenAmount, setToTokenAmount] = useState(0);
+  const [isSwapLoading, setIsSwapLoading] = useState(false);
+
+  const toast = useToast();
 
   const { data } = useAccount();
   const { data: signer } = useSigner();
@@ -56,6 +67,23 @@ const Swap = () => {
     }
   }, [fromTokenAmount, fromToken, toToken]);
 
+  const checkBalance = async (contract) => {
+    const balance = await contract.balanceOf(data.address);
+    if (balance.gte(ethers.utils.parseEther(fromTokenAmount.toString()))) {
+      return true;
+    }
+    return false;
+  };
+
+  const triggerToast = (title, status = "success") => {
+    toast({
+      title,
+      status,
+      isClosable: true,
+      duration: 2000,
+    });
+  };
+
   const getSwapAmount = async () => {
     try {
       let fromID = fromToken === "WETH" ? 1 : 2;
@@ -74,9 +102,18 @@ const Swap = () => {
   };
 
   const swap = async () => {
+    setIsSwapLoading(true);
     try {
       let fromID = fromToken === "WETH" ? 1 : 2;
       let toID = toToken === "WBTC" ? 2 : 1;
+      let fromTokenContract =
+        fromToken === "WETH" ? wethContract : wbtcContract;
+
+      const isSuffecientBalance = await checkBalance(fromTokenContract);
+      if (!isSuffecientBalance) {
+        triggerToast("Insuffecient balance", "error");
+        return;
+      }
 
       if (fromID === 1) {
         const approveTx = await wethContract.approve(
@@ -92,6 +129,8 @@ const Swap = () => {
         await approveTx.wait();
       }
 
+      triggerToast("Approve transaction successful");
+
       // approve before swap
       const swapTx = await dexContract.swap(
         fromID,
@@ -99,8 +138,12 @@ const Swap = () => {
         ethers.utils.parseEther(fromTokenAmount)
       );
       await swapTx.wait();
+
+      triggerToast("Swap transaction successful");
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsSwapLoading(false);
     }
   };
 
@@ -154,8 +197,12 @@ const Swap = () => {
         mt={4}
         w="full"
         colorScheme="blue"
-        disabled={!data && fromTokenAmount !== 0 && fromTokenAmount !== ""}
+        disabled={
+          (!data && fromTokenAmount !== 0 && fromTokenAmount !== "") ||
+          isSwapLoading
+        }
         onClick={swap}
+        isLoading={isSwapLoading}
       >
         Swap
       </Button>
