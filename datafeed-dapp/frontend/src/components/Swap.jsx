@@ -6,6 +6,7 @@ import {
   Text,
   Flex,
   useToast,
+  Badge,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
@@ -29,6 +30,8 @@ const Swap = () => {
   const [fromTokenAmount, setFromTokenAmount] = useState(0);
   const [toTokenAmount, setToTokenAmount] = useState(0);
   const [isSwapLoading, setIsSwapLoading] = useState(false);
+  const [wethBalance, setWethBalance] = useState(null);
+  const [wbtcBalance, setWbtcBalance] = useState(null);
 
   const toast = useToast();
 
@@ -52,6 +55,10 @@ const Swap = () => {
     contractInterface: ERC20ABI,
     signerOrProvider: signer,
   });
+
+  useEffect(() => {
+    fetchBalance();
+  }, [data, wethContract, wbtcContract]);
 
   useEffect(() => {
     fromToken === "WETH" ? setToToken("WBTC") : setToToken("WETH");
@@ -83,6 +90,35 @@ const Swap = () => {
       duration: 2000,
     });
   };
+
+  const fetchBalance = async () => {
+    try {
+      if (data.address && wethContract.provider && wbtcContract.provider) {
+        let wethBalanceResult = await wethContract.balanceOf(data.address);
+        let wbtcBalanceResult = await wbtcContract.balanceOf(data.address);
+        const wethRemainder = wethBalanceResult.mod(1e14);
+        const wbtcRemainder = wbtcBalanceResult.mod(1e14);
+
+        setWethBalance(
+          ethers.utils.formatEther(wethBalanceResult.sub(wethRemainder))
+        );
+        setWbtcBalance(
+          ethers.utils.formatEther(wbtcBalanceResult.sub(wbtcRemainder))
+        );
+      } else {
+        setWethBalance(null);
+        setWbtcBalance(null);
+      }
+    } catch (error) {
+      console.log("error");
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    console.log(wethBalance);
+    console.log(wbtcBalance);
+  }, [wethBalance, wbtcBalance]);
 
   const getSwapAmount = async () => {
     try {
@@ -140,6 +176,7 @@ const Swap = () => {
       await swapTx.wait();
 
       triggerToast("Swap transaction successful");
+      fetchBalance();
     } catch (error) {
       console.log(error);
     } finally {
@@ -148,7 +185,15 @@ const Swap = () => {
   };
 
   return (
-    <Container mt={8}>
+    <Container mt={4}>
+      <Flex justifyContent="flex-end" mt={4} mb={2}>
+        <Badge colorScheme="teal" fontSize="lg">
+          {wethBalance || 0} WETH
+        </Badge>
+        <Badge colorScheme="teal" fontSize="lg" ml={4}>
+          {wbtcBalance || 0} WBTC
+        </Badge>
+      </Flex>
       <Text mb={2}>Select from token and amount</Text>
       <Flex>
         <Input
