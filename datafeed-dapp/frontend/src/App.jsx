@@ -8,7 +8,6 @@ function App() {
     <Container w="xl" m="auto" p={0}>
       <Header />
       <Swap />
-      <Faucet />
     </Container>
   );
 }

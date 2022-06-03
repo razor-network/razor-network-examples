@@ -14,6 +14,7 @@ import { useAccount, useContract, useSigner } from "wagmi";
 
 import DexABI from "../abis/Dex.json";
 import ERC20ABI from "../abis/ERC20.json";
+import Faucet from "./Faucet";
 const DEX_ADDRESS =
   import.meta.env.VITE_DEX_ADDRESS ||
   "0x9e2fCeB92da40c9254d4aEae6d76099690B59C81";
@@ -185,73 +186,76 @@ const Swap = () => {
   };
 
   return (
-    <Container mt={4}>
-      <Flex justifyContent="flex-end" mt={4} mb={2}>
-        <Badge colorScheme="teal" fontSize="lg">
-          {wethBalance || 0} WETH
-        </Badge>
-        <Badge colorScheme="teal" fontSize="lg" ml={4}>
-          {wbtcBalance || 0} WBTC
-        </Badge>
-      </Flex>
-      <Text mb={2}>Select from token and amount</Text>
-      <Flex>
-        <Input
-          type="number"
-          placeholder="Enter amount"
-          flex={7}
-          value={fromTokenAmount}
-          onChange={(e) => setFromTokenAmount(e.target.value)}
-        />
-        <Select
-          flex={3}
-          value={fromToken}
-          placeholder="Select from Token"
-          onChange={(e) => setFromToken(e.target.value)}
-        >
-          <option value="WETH">WETH</option>
-          <option value="WBTC">WBTC</option>
-        </Select>
-      </Flex>
+    <>
+      <Container mt={4}>
+        <Flex justifyContent="flex-end" mt={4} mb={2}>
+          <Badge colorScheme="teal" fontSize="lg">
+            {wethBalance || 0} WETH
+          </Badge>
+          <Badge colorScheme="teal" fontSize="lg" ml={4}>
+            {wbtcBalance || 0} WBTC
+          </Badge>
+        </Flex>
+        <Text mb={2}>Select from token and amount</Text>
+        <Flex>
+          <Input
+            type="number"
+            placeholder="Enter amount"
+            flex={7}
+            value={fromTokenAmount}
+            onChange={(e) => setFromTokenAmount(e.target.value)}
+          />
+          <Select
+            flex={3}
+            value={fromToken}
+            placeholder="Select from Token"
+            onChange={(e) => setFromToken(e.target.value)}
+          >
+            <option value="WETH">WETH</option>
+            <option value="WBTC">WBTC</option>
+          </Select>
+        </Flex>
 
-      <Text mt={4} mb={2}>
-        Select to token and amount
-      </Text>
-      <Flex>
-        <Input
-          type="number"
-          placeholder="Enter amount"
-          disabled={true}
-          flex={7}
-          value={toTokenAmount}
-        />
-        <Select
-          flex={3}
-          onChange={(e) => setToToken(e.target.value)}
-          value={toToken}
-          placeholder="Select to token"
+        <Text mt={4} mb={2}>
+          Select to token and amount
+        </Text>
+        <Flex>
+          <Input
+            type="number"
+            placeholder="Enter amount"
+            disabled={true}
+            flex={7}
+            value={toTokenAmount}
+          />
+          <Select
+            flex={3}
+            onChange={(e) => setToToken(e.target.value)}
+            value={toToken}
+            placeholder="Select to token"
+          >
+            <option value="WETH">WETH</option>
+            <option value="WBTC">WBTC</option>
+          </Select>
+        </Flex>
+        <Text mt={2}>
+          {fromTokenAmount} {fromToken} = {toTokenAmount} {toToken}
+        </Text>
+        <Button
+          mt={4}
+          w="full"
+          colorScheme="blue"
+          disabled={
+            (!data && fromTokenAmount !== 0 && fromTokenAmount !== "") ||
+            isSwapLoading
+          }
+          onClick={swap}
+          isLoading={isSwapLoading}
         >
-          <option value="WETH">WETH</option>
-          <option value="WBTC">WBTC</option>
-        </Select>
-      </Flex>
-      <Text mt={2}>
-        {fromTokenAmount} {fromToken} = {toTokenAmount} {toToken}
-      </Text>
-      <Button
-        mt={4}
-        w="full"
-        colorScheme="blue"
-        disabled={
-          (!data && fromTokenAmount !== 0 && fromTokenAmount !== "") ||
-          isSwapLoading
-        }
-        onClick={swap}
-        isLoading={isSwapLoading}
-      >
-        Swap
-      </Button>
-    </Container>
+          Swap
+        </Button>
+      </Container>
+      <Faucet fetchBalance={fetchBalance} />
+    </>
   );
 };
 

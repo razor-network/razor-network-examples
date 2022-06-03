@@ -14,7 +14,7 @@ const DEX_ADDRESS =
   import.meta.env.VITE_DEX_ADDRESS ||
   "0x9e2fCeB92da40c9254d4aEae6d76099690B59C81";
 
-const Faucet = () => {
+const Faucet = ({ fetchBalance }) => {
   const { data } = useAccount();
 
   const { data: signer } = useSigner();
@@ -41,6 +41,7 @@ const Faucet = () => {
       const tx = await dexContract.addFunds(tokenID);
       await tx.wait();
 
+      fetchBalance();
       triggerToast(
         `Successfully trasnferred 0.01 ${tokenID === 1 ? "WETH" : "WBTC"}`
       );
