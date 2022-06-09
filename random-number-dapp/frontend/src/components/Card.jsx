@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 
 import LotteryABI from "../abi/Lottery.json";
 import ContractDetails from "./ContractDetails";
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
+const CONTRACT_ADDRESS =
+  import.meta.env.VITE_CONTRACT_ADDRESS ||
+  "0x365C268E878Dda3281ed87e6Ddd8aAcA1Ae1b472";
 
 const Card = () => {
   const { account } = useWeb3React();
@@ -58,8 +60,10 @@ const Card = () => {
     provider.getTransaction(transactionHash).then((tx) => {
       provider.call(tx).catch((err) => {
         const { error } = err;
+        // Skale testnet v1 has error message in error.data
+        // Skale testnet v2 has error message in error.data.message
         toast({
-          title: error.data,
+          title: error.data.message,
           description: "Transaction Reverted",
           status: "error",
           isClosable: true,

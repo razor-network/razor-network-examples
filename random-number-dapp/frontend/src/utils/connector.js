@@ -1,7 +1,7 @@
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { ethers } from "ethers";
 
-export const SKALE_CHAIN_ID = 416452918254875;
+export const SKALE_CHAIN_ID = 132333505628089;
 
 // currently supporting only skale chain
 export const injected = new InjectedConnector({
@@ -9,18 +9,20 @@ export const injected = new InjectedConnector({
 });
 
 export const skaleNetworkInfo = {
-  chainName: "Skale",
+  chainName: "Skale Testnet V2",
   name: "SKALE",
-  rpcUrls: ["https://dappnet-api.skalenodes.com/v1/faint-acubens"],
-  symbol: "SKL",
+  rpcUrls: ["https://staging-v2.skalenodes.com/v1/whispering-turais"],
+  symbol: "ETH",
   decimals: 18,
   iconUrls: ["https://s2.coinmarketcap.com/static/img/coins/64x64/8409.png"],
-  blockExplorerUrls: ["https://faint-acubens.explorer.dappnet.skalenodes.com/"],
+  blockExplorerUrls: [
+    "https://whispering-turais.explorer.staging-v2.skalenodes.com/",
+  ],
 };
 
 export const switchNetwork = async () => {
   const ethereum = window.ethereum;
-  const chainIdHex = ethers.utils.hexValue(416452918254875);
+  const chainIdHex = ethers.utils.hexValue(132333505628089);
   try {
     await ethereum.request({
       method: "wallet_switchEthereumChain",
