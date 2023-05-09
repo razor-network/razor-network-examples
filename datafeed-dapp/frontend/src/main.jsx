@@ -9,10 +9,10 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { skaleTestnetV2 } from "./utils/constant";
+import { polygonMumbai } from "./utils/constant";
 
 const { provider, chains } = configureChains(
-  [skaleTestnetV2],
+  [polygonMumbai],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 
