@@ -13,7 +13,7 @@ async function main() {
   console.log("USD token contract deployed at: ", usd.address);
 
   console.log("Deploying DEX contract");
-  const Dex = await hre.ethers.getContractFactory("Dex1");
+  const Dex = await hre.ethers.getContractFactory("Dex");
   const dex = await Dex.deploy(
     TRANSPARENT_FORWARDER_ADDRESS,
     usd.address,

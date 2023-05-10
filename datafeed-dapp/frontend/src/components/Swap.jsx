@@ -20,10 +20,10 @@ import ERC20ABI from "../abis/ERC20.json";
 import Faucet from "./Faucet";
 const DEX_ADDRESS =
   import.meta.env.VITE_DEX_ADDRESS ||
-  "0xD21fE3E90Edf1db054e54DC90B1619e2A44ba002";
+  "0x45AE733978c605918f1667F91BB8D2c3a506553e";
 const USD_TOKEN_ADDRESS =
   import.meta.env.USD_TOKEN_ADDRESS ||
-  "0x06b20Dd715cA1bF38085a115925d42e2df7Ef7b5";
+  "0xdD5d5a945d2e87aC73BEA8F31788bbd4b63C74d8";
 
 const Swap = () => {
   const [ethAmount, setETHAmount] = useState(0);
