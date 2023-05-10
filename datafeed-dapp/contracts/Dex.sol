@@ -32,7 +32,7 @@ contract Dex {
     function swap() public payable {
         uint256 collectionResult;
         int8 collectionPower;
-        uint256 collectionPriceInUSD;
+        uint256 usdAmount;
 
         (collectionResult, collectionPower) = transparentForwarder.getResult{
             value: 0
@@ -41,16 +41,15 @@ contract Dex {
         // * if power is +ve, price = result / 1o^power
         // * if power is -ve, price = result * 10^power
         if (collectionPower < 0) {
-            collectionPriceInUSD =
-                collectionResult *
+            usdAmount =
+                (msg.value * collectionResult) *
                 uint256(pow(collectionPower));
         } else {
-            collectionPriceInUSD =
-                collectionResult /
+            usdAmount =
+                (msg.value * collectionResult) /
                 uint256(pow(collectionPower));
         }
 
-        uint256 usdAmount = msg.value * collectionPriceInUSD;
         IERC20(usdToken).approve(address(this), usdAmount);
         IERC20(usdToken).transferFrom(address(this), msg.sender, usdAmount);
     }
@@ -77,7 +76,7 @@ contract Dex {
         }
         int256 result = 1;
 
-        if (val < -1) {
+        if (val < 0) {
             val = val * -1;
         }
 
