@@ -3,101 +3,31 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_delegator",
+        "name": "_transparentForwarder",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_token1",
+        "name": "_usdToken",
         "type": "address"
       },
       {
-        "internalType": "address",
-        "name": "_token2",
-        "type": "address"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_token1ID",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_token2ID",
-        "type": "uint16"
+        "internalType": "bytes32",
+        "name": "_collectionNameHash",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint16",
-        "name": "fromID",
-        "type": "uint16"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint16",
-        "name": "toID",
-        "type": "uint16"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "fromAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "toAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "Swap",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "_id",
-        "type": "uint16"
-      }
-    ],
-    "name": "addFunds",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "from",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "to",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fromAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "getSwapAmount",
+    "inputs": [],
+    "name": "collectionNameHash",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -136,75 +66,20 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "_from",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_to",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [],
     "name": "swap",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "token1",
+    "name": "transparentForwarder",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract ITransparentForwarder",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "token1ID",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "token2",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "token2ID",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
       }
     ],
     "stateMutability": "view",
@@ -213,17 +88,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint16",
-        "name": "_id",
-        "type": "uint16"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "_collectionNameHash",
+        "type": "bytes32"
       }
     ],
-    "name": "updateTokenAddress",
+    "name": "updateCollectionNameHash",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -231,17 +101,45 @@
   {
     "inputs": [
       {
-        "internalType": "uint16",
-        "name": "_id",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_tokenID",
-        "type": "uint16"
+        "internalType": "address",
+        "name": "_transparentForwarder",
+        "type": "address"
       }
     ],
-    "name": "updateTokenID",
+    "name": "updateTransparentForwarder",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_usdToken",
+        "type": "address"
+      }
+    ],
+    "name": "updateUSDToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "usdToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

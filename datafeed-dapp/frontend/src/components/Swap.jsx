@@ -7,7 +7,10 @@ import {
   Flex,
   useToast,
   Badge,
+  IconButton,
+  Tooltip,
 } from "@chakra-ui/react";
+import { AddIcon } from "@chakra-ui/icons";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useAccount, useContract, useSigner } from "wagmi";
@@ -17,22 +20,15 @@ import ERC20ABI from "../abis/ERC20.json";
 import Faucet from "./Faucet";
 const DEX_ADDRESS =
   import.meta.env.VITE_DEX_ADDRESS ||
-  "0x9e2fCeB92da40c9254d4aEae6d76099690B59C81";
-const WETH_ADDRESS =
-  import.meta.env.VITE_WETH_ADDRESS ||
-  "0x1f2Bc4c0DA2D1BcF235AF5030c85438D1e32DE00";
-const WBTC_ADDRESS =
-  import.meta.env.VITE_WBTC_ADDRESS ||
-  "0xF854Ff5EC716ad0D31A6F0B9808F619d7127BdeD";
+  "0x45AE733978c605918f1667F91BB8D2c3a506553e";
+const USD_TOKEN_ADDRESS =
+  import.meta.env.USD_TOKEN_ADDRESS ||
+  "0xdD5d5a945d2e87aC73BEA8F31788bbd4b63C74d8";
 
 const Swap = () => {
-  const [fromToken, setFromToken] = useState("WETH");
-  const [toToken, setToToken] = useState("WBTC");
-  const [fromTokenAmount, setFromTokenAmount] = useState(0);
-  const [toTokenAmount, setToTokenAmount] = useState(0);
+  const [ethAmount, setETHAmount] = useState(0);
   const [isSwapLoading, setIsSwapLoading] = useState(false);
-  const [wethBalance, setWethBalance] = useState(null);
-  const [wbtcBalance, setWbtcBalance] = useState(null);
+  const [usdTokenBalance, setUSDTokenBalance] = useState(null);
 
   const toast = useToast();
 
@@ -45,43 +41,15 @@ const Swap = () => {
     signerOrProvider: signer,
   });
 
-  const wethContract = useContract({
-    addressOrName: WETH_ADDRESS,
-    contractInterface: ERC20ABI,
-    signerOrProvider: signer,
-  });
-
-  const wbtcContract = useContract({
-    addressOrName: WBTC_ADDRESS,
+  const usdTokenContract = useContract({
+    addressOrName: USD_TOKEN_ADDRESS,
     contractInterface: ERC20ABI,
     signerOrProvider: signer,
   });
 
   useEffect(() => {
     fetchBalance();
-  }, [data, wethContract, wbtcContract]);
-
-  useEffect(() => {
-    fromToken === "WETH" ? setToToken("WBTC") : setToToken("WETH");
-  }, [fromToken]);
-
-  useEffect(() => {
-    toToken === "WBTC" ? setFromToken("WETH") : setFromToken("WBTC");
-  }, [toToken]);
-
-  useEffect(() => {
-    if (fromTokenAmount !== 0 && fromTokenAmount !== "") {
-      getSwapAmount();
-    }
-  }, [fromTokenAmount, fromToken, toToken]);
-
-  const checkBalance = async (contract) => {
-    const balance = await contract.balanceOf(data.address);
-    if (balance.gte(ethers.utils.parseEther(fromTokenAmount.toString()))) {
-      return true;
-    }
-    return false;
-  };
+  }, [data, usdTokenContract]);
 
   const triggerToast = (title, status = "success") => {
     toast({
@@ -94,21 +62,15 @@ const Swap = () => {
 
   const fetchBalance = async () => {
     try {
-      if (data.address && wethContract.provider && wbtcContract.provider) {
-        let wethBalanceResult = await wethContract.balanceOf(data.address);
-        let wbtcBalanceResult = await wbtcContract.balanceOf(data.address);
-        const wethRemainder = wethBalanceResult.mod(1e14);
-        const wbtcRemainder = wbtcBalanceResult.mod(1e14);
+      if (data.address && usdTokenContract.provider) {
+        let usdBalanceResult = await usdTokenContract.balanceOf(data.address);
+        const usdRemainder = usdBalanceResult.mod(1e14);
 
-        setWethBalance(
-          ethers.utils.formatEther(wethBalanceResult.sub(wethRemainder))
-        );
-        setWbtcBalance(
-          ethers.utils.formatEther(wbtcBalanceResult.sub(wbtcRemainder))
+        setUSDTokenBalance(
+          ethers.utils.formatEther(usdBalanceResult.sub(usdRemainder))
         );
       } else {
-        setWethBalance(null);
-        setWbtcBalance(null);
+        setUSDTokenBalance(null);
       }
     } catch (error) {
       console.log("error");
@@ -116,67 +78,45 @@ const Swap = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(wethBalance);
-    console.log(wbtcBalance);
-  }, [wethBalance, wbtcBalance]);
-
-  const getSwapAmount = async () => {
-    try {
-      let fromID = fromToken === "WETH" ? 1 : 2;
-      let toID = toToken === "WBTC" ? 2 : 1;
-
-      const value = await dexContract.getSwapAmount(
-        fromID,
-        toID,
-        ethers.utils.parseEther(fromTokenAmount.toString())
-      );
-      setToTokenAmount(ethers.utils.formatEther(value));
-    } catch (error) {
-      console.log(error);
-      console.log("Error occured while fetching swap amount");
+  const addToken = async () => {
+    const tokenOptions = {
+      name: `USD`,
+      address: USD_TOKEN_ADDRESS,
+      symbol: `USD`,
+      decimals: 18,
+    };
+    if (data.address) {
+      try {
+        const ethereum = window.ethereum;
+        await ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: tokenOptions,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
+
+  useEffect(() => {
+    console.log(usdTokenBalance);
+  }, [usdTokenBalance]);
 
   const swap = async () => {
     setIsSwapLoading(true);
     try {
-      let fromID = fromToken === "WETH" ? 1 : 2;
-      let toID = toToken === "WBTC" ? 2 : 1;
-      let fromTokenContract =
-        fromToken === "WETH" ? wethContract : wbtcContract;
-
-      const isSuffecientBalance = await checkBalance(fromTokenContract);
-      if (!isSuffecientBalance) {
-        triggerToast("Insuffecient balance", "error");
-        return;
-      }
-
-      if (fromID === 1) {
-        const approveTx = await wethContract.approve(
-          DEX_ADDRESS,
-          ethers.utils.parseEther(fromTokenAmount)
-        );
-        await approveTx.wait();
-      } else {
-        const approveTx = await wbtcContract.approve(
-          DEX_ADDRESS,
-          ethers.utils.parseEther(fromTokenAmount)
-        );
-        await approveTx.wait();
-      }
-
-      triggerToast("Approve transaction successful");
-
-      // approve before swap
-      const swapTx = await dexContract.swap(
-        fromID,
-        toID,
-        ethers.utils.parseEther(fromTokenAmount)
-      );
-      await swapTx.wait();
+      const ethAmountInBN = ethers.utils.parseEther(ethAmount);
+      const tx = await dexContract.swap({
+        value: ethAmountInBN,
+      });
+      console.log(tx);
+      await tx.wait();
 
       triggerToast("Swap transaction successful");
+      setETHAmount("0");
       fetchBalance();
     } catch (error) {
       console.log(error);
@@ -189,12 +129,22 @@ const Swap = () => {
     <>
       <Container mt={4}>
         <Flex justifyContent="flex-end" mt={4} mb={2}>
-          <Badge colorScheme="teal" fontSize="lg">
-            {wethBalance || 0} WETH
-          </Badge>
-          <Badge colorScheme="teal" fontSize="lg" ml={4}>
-            {wbtcBalance || 0} WBTC
-          </Badge>
+          <Flex justifyContent="center" alignItems="center">
+            <Badge colorScheme="teal" fontSize="lg">
+              {usdTokenBalance || 0} USD
+            </Badge>
+          </Flex>
+
+          <Tooltip label="Add USD token to metamask">
+            <IconButton
+              aria-label="Search database"
+              icon={<AddIcon />}
+              size={5}
+              ml={4}
+              padding={1}
+              onClick={addToken}
+            />
+          </Tooltip>
         </Flex>
         <Text mb={2}>Select from token and amount</Text>
         <Flex>
@@ -202,51 +152,17 @@ const Swap = () => {
             type="number"
             placeholder="Enter amount"
             flex={7}
-            value={fromTokenAmount}
-            onChange={(e) => setFromTokenAmount(e.target.value)}
+            value={ethAmount}
+            onChange={(e) => setETHAmount(e.target.value)}
           />
-          <Select
-            flex={3}
-            value={fromToken}
-            placeholder="Select from Token"
-            onChange={(e) => setFromToken(e.target.value)}
-          >
-            <option value="WETH">WETH</option>
-            <option value="WBTC">WBTC</option>
-          </Select>
         </Flex>
 
-        <Text mt={4} mb={2}>
-          Select to token and amount
-        </Text>
-        <Flex>
-          <Input
-            type="number"
-            placeholder="Enter amount"
-            disabled={true}
-            flex={7}
-            value={toTokenAmount}
-          />
-          <Select
-            flex={3}
-            onChange={(e) => setToToken(e.target.value)}
-            value={toToken}
-            placeholder="Select to token"
-          >
-            <option value="WETH">WETH</option>
-            <option value="WBTC">WBTC</option>
-          </Select>
-        </Flex>
-        <Text mt={2}>
-          {fromTokenAmount} {fromToken} = {toTokenAmount} {toToken}
-        </Text>
         <Button
           mt={4}
           w="full"
           colorScheme="blue"
           disabled={
-            (!data && fromTokenAmount !== 0 && fromTokenAmount !== "") ||
-            isSwapLoading
+            (!data && ethAmount !== 0 && ethAmount !== "") || isSwapLoading
           }
           onClick={swap}
           isLoading={isSwapLoading}
@@ -254,7 +170,6 @@ const Swap = () => {
           Swap
         </Button>
       </Container>
-      <Faucet fetchBalance={fetchBalance} />
     </>
   );
 };

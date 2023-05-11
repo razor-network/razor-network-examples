@@ -1,20 +1,21 @@
-export const skaleTestnetV2 = {
-  id: 132333505628089,
-  name: "Skale Testnet v2",
-  network: "skale testnet v2",
+export const polygonMumbai = {
+  id: 80001,
+  name: "Polygon Mumbai",
+  network: "Polygon Mumbai",
+  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/3890.png",
   iconBackground: "#fff",
   nativeCurrency: {
     decimals: 18,
-    name: "Skale",
-    symbol: "ETH",
+    name: "MATIC",
+    symbol: "MATIC",
   },
   rpcUrls: {
-    default: "https://staging-v2.skalenodes.com/v1/whispering-turais",
+    default: "https://rpc-mumbai.maticvigil.com",
   },
   blockExplorers: {
     default: {
-      name: "Skalenodes",
-      url: "https://whispering-turais.explorer.staging-v2.skalenodes.com/",
+      name: "Polygon Mumbai",
+      url: "https://mumbai.polygonscan.com/",
     },
   },
   testnet: true,
