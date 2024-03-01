@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-
+/// Example Client Contract
 interface ITransparentForwarder {
     /**
      * @notice Updates the result based on the provided data and returns the latest result

@@ -36,14 +36,15 @@ const Faucet = ({ fetchBalance }) => {
     signerOrProvider: signer,
   });
 
-  const addFunds = async (tokenID) => {
+  const addFunds = async () => {
+    console.log("Adding funds", data);
     try {
-      const tx = await dexContract.addFunds(tokenID);
+      const tx = await dexContract.disperseFunds();
       await tx.wait();
 
       fetchBalance();
       triggerToast(
-        `Successfully trasnferred 0.01 ${tokenID === 1 ? "WETH" : "WBTC"}`
+        `Successfully transferred 0.1 WETH`
       );
       console.log(tx);
     } catch (error) {
@@ -65,14 +66,14 @@ const Faucet = ({ fetchBalance }) => {
         >
           Request WETH
         </Button>
-        <Button
+        {/* <Button
           colorScheme="blue"
           variant="outline"
           disabled={!data}
           onClick={() => addFunds(2)}
         >
           Request WBTC
-        </Button>
+        </Button> */}
       </Flex>
     </Container>
   );

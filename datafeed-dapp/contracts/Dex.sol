@@ -9,6 +9,7 @@ contract Dex {
     address public immutable owner;
     ITransparentForwarder public transparentForwarder;
     address public usdToken;
+    address public wethToken;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "caller is not the owner");
@@ -17,18 +18,20 @@ contract Dex {
 
     constructor(
         address _transparentForwarder,
-        address _usdToken
+        address _usdToken,
+        address _wethToken
     ) {
         owner = msg.sender;
         transparentForwarder = ITransparentForwarder(_transparentForwarder);
         usdToken = _usdToken;
+        wethToken = _wethToken;
     }
 
     /// @notice Swap native token with equivalent USD token
     function swap(bytes calldata data) public payable {
         uint256 usdAmount;
         uint256 minUpdateCost = 1 wei; // this should be made configurable
-         (uint256 result, int8 power, uint256 timestamp) = transparentForwarder.updateAndGetResult{value: minUpdateCost}(data);
+         (uint256 result, int8 power,) = transparentForwarder.updateAndGetResult{value: minUpdateCost}(data);
         // * if power is +ve, price = result / 10^power
         // * if power is -ve, price = result * 10^power
         if (power < 0) {
@@ -42,7 +45,18 @@ contract Dex {
         }
 
         IERC20(usdToken).approve(address(this), usdAmount);
+        IERC20(wethToken).approve(msg.sender, msg.value);
+        IERC20(wethToken).transferFrom(msg.sender, address(this), msg.value);
         IERC20(usdToken).transferFrom(address(this), msg.sender, usdAmount);
+    }
+
+    function disperseFunds() public payable {
+        uint256 balance = IERC20(wethToken).balanceOf(msg.sender);
+        if(balance > 0.2 ether){
+            revert("balance is sufficient");
+        }
+         IERC20(wethToken).approve(address(this), 0.1 ether);
+        IERC20(wethToken).transfer(msg.sender, 0.1 ether);
     }
 
     function updateTransparentForwarder(
