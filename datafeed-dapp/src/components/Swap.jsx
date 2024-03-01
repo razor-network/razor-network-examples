@@ -34,6 +34,7 @@ const Swap = () => {
   const [isSwapLoading, setIsSwapLoading] = useState(false);
   const [usdTokenBalance, setUSDTokenBalance] = useState(null);
   const [wethBalance, setWethBalance] = useState(null);
+  const [rawBalance, setRawBalance] = useState(null);
   const toast = useToast();
 
   const { data } = useAccount();
@@ -78,6 +79,8 @@ const Swap = () => {
         const wethRemainder = wethBalanceResult.mod(1e14);
         let usdTokenBalanceResult = await usdTokenContract.balanceOf(data.address);
         const usdTokenRemainder = usdTokenBalanceResult.mod(1e14);
+        console.log(wethBalanceResult)
+        setRawBalance(wethBalanceResult);
         setWethBalance(ethers.utils.formatEther(wethBalanceResult.sub(wethRemainder)));
         setUSDTokenBalance(
           ethers.utils.formatEther(usdTokenBalanceResult.sub(usdTokenRemainder))
@@ -122,11 +125,14 @@ const Swap = () => {
   const swap = async () => {
     setIsSwapLoading(true);
     try {
-    const calldata = '0x7b90f0c55c82d1da34acbf1cecc43366108d4f27063fa29084aeef332055644b00000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000259102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e8734281716000000000000000000000000000000000000000000000000000000000000538b70000000000000000000000000000000000000000000000000000000065e1988000000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000001dace82ee20e1ace54796dd5fa2172790a9cd85414a2d25826fea61682dae2122000000000000000000000000000000000000000000000000000000000000004199c7b4d62fe4e156c970a98338abeb4bbd62a22111e0a3ee1e158cb7120ee1db6418df2a1320defd24300c8e5d4ae1a46393f86fbeaf4ed0c7968cb3d6d389f91c00000000000000000000000000000000000000000000000000000000000000'
-    const data = ethers.utils.defaultAbiCoder.encode([bytes], calldata)
+    const response = await axios.get('https://api-staging.razorscan.io/collection/0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160');
+    const { calldata } = response.data;
+    console.log(calldata)
       const ethAmountInBN = ethers.utils.parseEther(ethAmount);
       console.log(ethAmountInBN);
-      const tx = await dexContract.swap(data, ethAmountInBN);
+      const tx = await dexContract.swap(calldata, ethAmountInBN, {
+        value: 0,
+      });
       console.log(tx);
       await tx.wait();
 
@@ -165,13 +171,20 @@ const Swap = () => {
           </Tooltip>
         </Flex>
         <Text mb={2}>Amount of <Badge>WETH</Badge> to swap</Text>
-        <Flex>
+        <Flex flexDirection="column">
+        <Flex justifyContent="space-between" mb="1rem">
+            <Button onClick={() => setETHAmount(ethers.utils.formatEther(rawBalance.mul(25).div(100)))}>25%</Button>
+            <Button onClick={() => setETHAmount(ethers.utils.formatEther(rawBalance.mul(50).div(100)))}>50%</Button>    
+            <Button onClick={() => setETHAmount(ethers.utils.formatEther(rawBalance.mul(75).div(100)))}>75%</Button>    
+            <Button onClick={() => setETHAmount(ethers.utils.formatEther(rawBalance))}>100%</Button>
+        </Flex>
           <Input
             type="number"
             placeholder="Enter amount"
             flex={7}
             value={ethAmount}
             onChange={(e) => setETHAmount(e.target.value)}
+            minHeight="50px"
           />
           {/* <Input
             type="number"
@@ -187,7 +200,7 @@ const Swap = () => {
           w="full"
           colorScheme="blue"
           disabled={
-            (!data && ethAmount !== 0 && ethAmount !== "") || isSwapLoading
+            (!data && ethAmount !== 0 && ethAmount !== "" || ethAmount > wethBalance) || isSwapLoading
           }
           onClick={swap}
           isLoading={isSwapLoading}
