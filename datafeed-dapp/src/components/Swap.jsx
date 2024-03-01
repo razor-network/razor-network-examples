@@ -125,6 +125,7 @@ const Swap = () => {
   const swap = async () => {
     setIsSwapLoading(true);
     try {
+    // keccak(ETHUSD) = 0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160
     const response = await axios.get('https://api-staging.razorscan.io/collection/0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160');
     const { calldata } = response.data;
     console.log(calldata)

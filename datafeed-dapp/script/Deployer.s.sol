@@ -14,7 +14,7 @@ contract Deployer is Script {
      address public deployer;
      string internal _deployments;
      string internal _deploymentsPath;
-    address constant TRANSPARENT_FORWARDER_ADDRESS = address(0x328BAc5C2be4961252041EC589A22e55Ec132010);
+    address constant TRANSPARENT_FORWARDER_ADDRESS = address(0x8cE69db7CA670A22073199C2934FAbC72084a3BC);
     // The list supported networks TRANSPARENT_FORWARDER Addresses can be found here - https://docs.razor.network/docs/consume-data-feeds/deployment-details
 
     function run() external {
