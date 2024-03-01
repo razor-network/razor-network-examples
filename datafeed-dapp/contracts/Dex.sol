@@ -9,7 +9,6 @@ contract Dex {
     address public immutable owner;
     ITransparentForwarder public transparentForwarder;
     address public usdToken;
-    bytes32 public collectionNameHash;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "caller is not the owner");
@@ -18,36 +17,28 @@ contract Dex {
 
     constructor(
         address _transparentForwarder,
-        address _usdToken,
-        bytes32 _collectionNameHash
+        address _usdToken
     ) {
         owner = msg.sender;
-
         transparentForwarder = ITransparentForwarder(_transparentForwarder);
         usdToken = _usdToken;
-        collectionNameHash = _collectionNameHash;
     }
 
     /// @notice Swap native token with equivalent USD token
-    function swap() public payable {
-        uint256 collectionResult;
-        int8 collectionPower;
+    function swap(bytes calldata data) public payable {
         uint256 usdAmount;
-
-        (collectionResult, collectionPower) = transparentForwarder.getResult{
-            value: 0
-        }(collectionNameHash);
-
-        // * if power is +ve, price = result / 1o^power
+        uint256 minUpdateCost = 1 wei; // this should be made configurable
+         (uint256 result, int8 power, uint256 timestamp) = transparentForwarder.updateAndGetResult{value: minUpdateCost}(data);
+        // * if power is +ve, price = result / 10^power
         // * if power is -ve, price = result * 10^power
-        if (collectionPower < 0) {
+        if (power < 0) {
             usdAmount =
-                (msg.value * collectionResult) *
-                uint256(pow(collectionPower));
+                (msg.value * result) *
+                uint256(pow(power));
         } else {
             usdAmount =
-                (msg.value * collectionResult) /
-                uint256(pow(collectionPower));
+                (msg.value * result) /
+                uint256(pow(power));
         }
 
         IERC20(usdToken).approve(address(this), usdAmount);
@@ -63,13 +54,6 @@ contract Dex {
     function updateUSDToken(address _usdToken) public onlyOwner {
         usdToken = _usdToken;
     }
-
-    function updateCollectionNameHash(
-        bytes32 _collectionNameHash
-    ) public onlyOwner {
-        collectionNameHash = _collectionNameHash;
-    }
-
     function pow(int8 val) public pure returns (int256) {
         if (val == 0) {
             return 1;

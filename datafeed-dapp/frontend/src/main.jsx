@@ -8,16 +8,15 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import "@rainbow-me/rainbowkit/styles.css";
-
-import { polygonMumbai } from "./utils/constant";
+import { sepolia } from "./utils/constant";
 
 const { provider, chains } = configureChains(
-  [polygonMumbai],
-  [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
+  [sepolia],
+  [jsonRpcProvider({ rpc: (chain) => ({ http: sepolia.rpcUrls.default.http[0] }) })]
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "My rainbow app",
+  appName: "Razor example app",
   chains,
 });
 
