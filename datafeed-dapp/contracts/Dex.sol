@@ -28,25 +28,24 @@ contract Dex {
     }
 
     /// @notice Swap native token with equivalent USD token
-    function swap(bytes calldata data) public payable {
+    function swap(bytes calldata data, uint256 _amount) public payable {
         uint256 usdAmount;
-        uint256 minUpdateCost = 1 wei; // this should be made configurable
-         (uint256 result, int8 power,) = transparentForwarder.updateAndGetResult{value: minUpdateCost}(data);
+         (uint256 result, int8 power,) = transparentForwarder.updateAndGetResult{value: msg.value}(data);
         // * if power is +ve, price = result / 10^power
         // * if power is -ve, price = result * 10^power
         if (power < 0) {
             usdAmount =
-                (msg.value * result) *
+                (_amount * result) *
                 uint256(pow(power));
         } else {
             usdAmount =
-                (msg.value * result) /
+                (_amount * result) /
                 uint256(pow(power));
         }
 
         IERC20(usdToken).approve(address(this), usdAmount);
         IERC20(wethToken).approve(msg.sender, msg.value);
-        IERC20(wethToken).transferFrom(msg.sender, address(this), msg.value);
+        IERC20(wethToken).transferFrom(msg.sender, address(this), _amount);
         IERC20(usdToken).transferFrom(address(this), msg.sender, usdAmount);
     }
 

@@ -12,7 +12,7 @@ import DexABI from "../abis/Dex.json";
 
 const DEX_ADDRESS =
   import.meta.env.VITE_DEX_ADDRESS ||
-  "0x9e2fCeB92da40c9254d4aEae6d76099690B59C81";
+  "";
 
 const Faucet = ({ fetchBalance }) => {
   const { data } = useAccount();
@@ -66,14 +66,6 @@ const Faucet = ({ fetchBalance }) => {
         >
           Request WETH
         </Button>
-        {/* <Button
-          colorScheme="blue"
-          variant="outline"
-          disabled={!data}
-          onClick={() => addFunds(2)}
-        >
-          Request WBTC
-        </Button> */}
       </Flex>
     </Container>
   );

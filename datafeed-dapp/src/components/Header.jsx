@@ -28,7 +28,7 @@ const Header = () => {
         alignItems="center"
         justifyContent="center"
       >
-        <Heading>Razor Network Dex</Heading>
+        <Heading>Example Dex</Heading>
         <Text>Swap assets using Razor Network oracle</Text>
       </Flex>
     </>
