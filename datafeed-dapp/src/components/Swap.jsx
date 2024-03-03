@@ -125,9 +125,14 @@ const Swap = () => {
   const swap = async () => {
     setIsSwapLoading(true);
     try {
+
+    const approve = await wethTokenContract.approve(DEX_ADDRESS, ethers.utils.parseEther(ethAmount));
+    await approve.wait();
+    console.log(approve);
     // keccak(ETHUSD) = 0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160
     const response = await axios.get('https://api-staging.razorscan.io/collection/0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160');
     const { calldata } = response.data;
+    console.log("calldata")
     console.log(calldata)
       const ethAmountInBN = ethers.utils.parseEther(ethAmount);
       console.log(ethAmountInBN);
