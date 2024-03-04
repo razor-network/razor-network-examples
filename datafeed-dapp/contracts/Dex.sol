@@ -30,7 +30,7 @@ contract Dex {
     /// @notice Swap native token with equivalent USD token
     function swap(bytes calldata data, uint256 _amount) public payable {
         uint256 usdAmount;
-         (uint256 result, int8 power,) = transparentForwarder.updateAndGetResult(data);
+        (uint256 result, int8 power,) = transparentForwarder.updateAndGetResult(data);
         // * if power is +ve, price = result / 10^power
         // * if power is -ve, price = result * 10^power
         if (power < 0) {

@@ -192,13 +192,6 @@ const Swap = () => {
             onChange={(e) => setETHAmount(e.target.value)}
             minHeight="50px"
           />
-          {/* <Input
-            type="number"
-            placeholder="Enter amount"
-            flex={7}
-            value={ethAmount}
-            onChange={(e) => setETHAmount(e.target.value)}
-          /> */}
         </Flex>
 
         <Button
