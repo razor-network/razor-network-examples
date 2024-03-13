@@ -26,30 +26,26 @@ const AccordionCard = () => {
         <AccordionPanel pb={4}>
           <OrderedList>
             <ListItem>
-              Participant deposit <b>0.1 ETH</b> in pool to contribute.
+              To participate in the pool, each participant must deposit <b>0.1 ETH</b>.
             </ListItem>
             <ListItem>
-              Only <b>5</b> unique participant are allowed to participate in
-              single pool.
+            The pool is limited to a maximum of <b>5</b> unique participants.
             </ListItem>
             <ListItem>
-              Once pool participant has been reached to max(5). Anyone can call
-              declare winner.
+            Once the participant limit is reached, any participant can initiate the process to declare a winner.
             </ListItem>
             <ListItem>
-              Winner will be choosen randomly using{" "}
-              <Link
-                href="https://github.com/razor-network/contracts/blob/master/contracts/randomNumber/RandomNoManager.sol"
+              The winner will be selected randomly using the <Link
+                href="https://github.com/razor-network/oracle-contracts/blob/v1.1/contracts/randomNumber/RandomNoManager.sol"
                 isExternal
                 color="teal"
               >
                 Razor Network RandomNoManager
                 <ExternalLinkIcon mx="2px" />
-              </Link>{" "}
-              contract.
+              </Link>{" "} contract.
             </ListItem>
             <ListItem>
-              Winner will be rewared with <b>0.5 ETH</b>.
+                The chosen winner will be rewarded with <b> 0.5 ETH</b>.
             </ListItem>
           </OrderedList>
         </AccordionPanel>
