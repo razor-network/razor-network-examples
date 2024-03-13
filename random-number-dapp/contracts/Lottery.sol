@@ -6,7 +6,7 @@ import "./interface/IRandomNoManager.sol";
 contract Lottery {
     uint256 public contributionAmount = 0.1 ether;
     uint8 public constant MAX_PARTICIPANTS = 5;
-    uint16 public constant EPOCH_LENGTH = 1800;
+    uint16 public constant EPOCH_LENGTH = 1200;
     uint256 public poolCounter = 1;
     uint8 public poolParticipantCounter = 0;
 
