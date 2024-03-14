@@ -1,9 +1,8 @@
 import { AddIcon, BellIcon } from "@chakra-ui/icons";
 import { Button, VStack, Text, Tooltip, useToast } from "@chakra-ui/react";
-import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-
+import { useAccount, useContract, useSigner } from "wagmi";
 import LotteryABI from "../abi/Lottery.json";
 import ContractDetails from "./ContractDetails";
 const CONTRACT_ADDRESS =
@@ -11,7 +10,7 @@ const CONTRACT_ADDRESS =
   "0x365C268E878Dda3281ed87e6Ddd8aAcA1Ae1b472";
 
 const Card = () => {
-  const { account } = useWeb3React();
+  const { account } = useAccount();
   const [poolCounter, setPoolCounter] = useState(null);
   const [participantCounter, setParticipantCounter] = useState(null);
   const [isContributeLoading, setIsCoontributeLoading] = useState(false);
@@ -22,7 +21,11 @@ const Card = () => {
   const getContractInstance = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const Lottery = new ethers.Contract(CONTRACT_ADDRESS, LotteryABI, signer);
+    const Lottery = useContract({
+        addressOrName: CONTRACT_ADDRESS,
+        contractInterface: LotteryABI,
+        signerOrProvider: signer,
+      });
     return Lottery;
   };
 

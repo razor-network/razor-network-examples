@@ -8,6 +8,7 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import AccordionCard from "./components/AccordionCard";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Card from "./components/Card";
 import Connect from "./components/Connect";
 
@@ -27,7 +28,8 @@ function App() {
           icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
         />
       </Flex>
-      <Connect />
+      {/* <Connect /> */}
+      <ConnectButton/>
       <Card />
       <AccordionCard />
     </Container>
