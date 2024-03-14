@@ -13,7 +13,7 @@ To interact with the examples in this repository, follow these setup instruction
 #### Prerequisites
 
 - Ensure you have [Node.js](https://nodejs.org/) installed.
-- Verify that [Foundry](https://book.getfoundry.sh/getting-started/installation.html) is installed for smart contract interactions.
+- Verify that [Foundry](https://book.getfoundry.sh/getting-started/installation) is installed for smart contract interactions.
 
 #### Installation
 
