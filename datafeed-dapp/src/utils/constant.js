@@ -21,7 +21,7 @@ export const polygonMumbai = {
   testnet: true,
 };
 
-const sepolia = {
+export const sepolia = {
      id: 11155111,
      network: "sepolia",
      name: "Sepolia",

@@ -1,5 +1,4 @@
 import { Container } from "@chakra-ui/react";
-import Faucet from "./components/Faucet";
 import Header from "./components/Header";
 import Swap from "./components/Swap";
 
@@ -8,7 +7,6 @@ function App() {
     <Container w="xl" m="auto" p={0}>
       <Header />
       <Swap />
-      <Faucet />
     </Container>
   );
 }

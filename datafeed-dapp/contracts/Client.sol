@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-
+/// Example Client Contract
 interface ITransparentForwarder {
     /**
      * @notice Updates the result based on the provided data and returns the latest result
@@ -37,8 +37,8 @@ contract Client {
     uint256 public lastTimestamp;
     bool public isResultValid;
 
-    constructor(address _transparentForwarder) {
-        transparentForwarder = ITransparentForwarder(_transparentForwarder);
+    constructor() {
+        transparentForwarder = ITransparentForwarder(0x8cE69db7CA670A22073199C2934FAbC72084a3BC);
     }
 
     function setTransparentForwarder(address _transparentForwarder) public {

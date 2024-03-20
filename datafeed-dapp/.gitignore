@@ -8,6 +8,11 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+out
+cache
+.env
+package-lock.json
+broadcast
 dist
 dist-ssr
 *.local

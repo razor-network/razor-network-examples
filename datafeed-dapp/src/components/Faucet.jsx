@@ -12,7 +12,7 @@ import DexABI from "../abis/Dex.json";
 
 const DEX_ADDRESS =
   import.meta.env.VITE_DEX_ADDRESS ||
-  "0x9e2fCeB92da40c9254d4aEae6d76099690B59C81";
+  "";
 
 const Faucet = ({ fetchBalance }) => {
   const { data } = useAccount();
@@ -36,14 +36,15 @@ const Faucet = ({ fetchBalance }) => {
     signerOrProvider: signer,
   });
 
-  const addFunds = async (tokenID) => {
+  const addFunds = async () => {
+    console.log("Adding funds", data);
     try {
-      const tx = await dexContract.addFunds(tokenID);
+      const tx = await dexContract.disperseFunds();
       await tx.wait();
 
       fetchBalance();
       triggerToast(
-        `Successfully trasnferred 0.01 ${tokenID === 1 ? "WETH" : "WBTC"}`
+        `Successfully transferred 0.1 WETH`
       );
       console.log(tx);
     } catch (error) {
@@ -64,14 +65,6 @@ const Faucet = ({ fetchBalance }) => {
           onClick={() => addFunds(1)}
         >
           Request WETH
-        </Button>
-        <Button
-          colorScheme="blue"
-          variant="outline"
-          disabled={!data}
-          onClick={() => addFunds(2)}
-        >
-          Request WBTC
         </Button>
       </Flex>
     </Container>
