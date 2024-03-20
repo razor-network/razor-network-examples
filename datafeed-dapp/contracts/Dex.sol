@@ -9,7 +9,7 @@ contract Dex {
     address public immutable owner;
     ITransparentForwarder public transparentForwarder;
     address public usdToken;
-    bytes32 public collectionNameHash;
+    address public wethToken;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "caller is not the owner");
@@ -19,39 +19,42 @@ contract Dex {
     constructor(
         address _transparentForwarder,
         address _usdToken,
-        bytes32 _collectionNameHash
+        address _wethToken
     ) {
         owner = msg.sender;
-
         transparentForwarder = ITransparentForwarder(_transparentForwarder);
         usdToken = _usdToken;
-        collectionNameHash = _collectionNameHash;
+        wethToken = _wethToken;
     }
 
     /// @notice Swap native token with equivalent USD token
-    function swap() public payable {
-        uint256 collectionResult;
-        int8 collectionPower;
+    function swap(bytes calldata data, uint256 _amount) public payable {
         uint256 usdAmount;
-
-        (collectionResult, collectionPower) = transparentForwarder.getResult{
-            value: 0
-        }(collectionNameHash);
-
-        // * if power is +ve, price = result / 1o^power
+        (uint256 result, int8 power,) = transparentForwarder.updateAndGetResult(data);
+        // * if power is +ve, price = result / 10^power
         // * if power is -ve, price = result * 10^power
-        if (collectionPower < 0) {
+        if (power < 0) {
             usdAmount =
-                (msg.value * collectionResult) *
-                uint256(pow(collectionPower));
+                (_amount * result) *
+                uint256(pow(power));
         } else {
             usdAmount =
-                (msg.value * collectionResult) /
-                uint256(pow(collectionPower));
+                (_amount * result) /
+                uint256(pow(power));
         }
 
+        require(IERC20(wethToken).transferFrom(msg.sender, address(this), _amount), "WETH token transfer failed");
         IERC20(usdToken).approve(address(this), usdAmount);
-        IERC20(usdToken).transferFrom(address(this), msg.sender, usdAmount);
+        require(IERC20(usdToken).transfer(msg.sender, usdAmount), "USD token transfer failed");
+    }
+
+    function disperseFunds() public payable {
+        uint256 balance = IERC20(wethToken).balanceOf(msg.sender);
+        if(balance > 0.2 ether){
+            revert("balance is sufficient");
+        }
+         IERC20(wethToken).approve(address(this), 0.1 ether);
+        IERC20(wethToken).transfer(msg.sender, 0.1 ether);
     }
 
     function updateTransparentForwarder(
@@ -63,13 +66,6 @@ contract Dex {
     function updateUSDToken(address _usdToken) public onlyOwner {
         usdToken = _usdToken;
     }
-
-    function updateCollectionNameHash(
-        bytes32 _collectionNameHash
-    ) public onlyOwner {
-        collectionNameHash = _collectionNameHash;
-    }
-
     function pow(int8 val) public pure returns (int256) {
         if (val == 0) {
             return 1;
