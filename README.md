@@ -20,15 +20,13 @@ To interact with the examples in this repository, follow these setup instruction
 1. Clone the repository and install dependencies:
 
    ```sh
-   git clone <repository-url>
-   cd <repository-name>
+   git clone https://github.com/razor-network/razor-network-examples.git
+   cd razor-network-examples
    npm install
    ```
 
 2. Set up your environment variables. Copy the .env.tpl to .env and update the variables accordingly:
-
     ```sh
-    Copy code
     cp .env.tpl .env
     ```
 3. Deploy Contracts 
@@ -36,10 +34,10 @@ To interact with the examples in this repository, follow these setup instruction
     To deploy the necessary contracts, including the DEX contract, USD, and WETH tokens, use the following forge command:
 
     ``` sh
-    forge script script/Deployer.s.sol:Deployer --rpc-url $SEPOLIA_RPC --optimize --private-key $PRIV_KEY -vvv
+    forge script script/Deployer.s.sol:Deployer --rpc-url $NETWORK_RPC --optimize --private-key $PRIV_KEY -vvv
     ```
 
-    Replace $SEPOLIA_RPC with your Sepolia RPC URL and $PRIV_KEY with your private key.
+    Replace $NETWORK_RPC with your chosen networks RPC URL and $PRIV_KEY with your private key.
 
     After deployment, update the .env file with the contract addresses found in the deployments folder. Contracts are already deployed on Sepolia:
     ```sh
